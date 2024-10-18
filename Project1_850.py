@@ -220,8 +220,8 @@ plt.title('Confusion Matrix (Random Forest)', fontsize=15, pad=20)
 plt.xlabel('Predicted Labels', fontsize=9)
 plt.ylabel('True Labels', fontsize=10)
 
-disp.plot()
-plt.show()
+# disp.plot()
+# plt.show()
 
 # ----------------------------------------
 # Step 6: Stacked Model Performance Analysis
