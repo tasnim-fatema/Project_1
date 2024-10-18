@@ -76,7 +76,7 @@ print(f"Training target shape: {y_train.shape}")
 print(f"Testing target shape: {y_test.shape}")
 
 df.corr()
-sns.heatmap(df.corr().round(2), annot=True, cmap="coolwarm")
+sns.heatmap(df.corr().round(2), annot=True, cmap="magma")
 corr1 = y_train.corr(X_train['X'])
 print(corr1)
 corr2 = y_train.corr(X_train['Y'])
@@ -85,14 +85,9 @@ corr3 = y_train.corr(X_train['Z'])
 print(corr3)
 
 
-# # Split the data into 80% training and 20% testing
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# # Display the shape of the resulting datasets
-# print(f"Training data shape: {X_train.shape}")
-# print(f"Testing data shape: {X_test.shape}")
-# print(f"Training target shape: {y_train.shape}")
-# print(f"Testing target shape: {y_test.shape}")
+# ----------------------------------------
+# Step 4: Classification Model Development
+# ----------------------------------------
 
 # Initialize the StandardScaler
 my_scaler = StandardScaler()
@@ -153,15 +148,6 @@ print(classification_report(y_test, y_pred_svm))
 # Predictions on test data with the best SVR model
 y_pred_svm = best_model_svm.predict(X_test_scaled)
 
-
-# # Optional: Plot predicted vs actual values
-# plt.figure(figsize=(8, 6))
-# plt.scatter(y_test, y_pred_svr, alpha=0.6)
-# plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'r--')  # Diagonal line
-# plt.xlabel('Actual Values')
-# plt.ylabel('Predicted Values')
-# plt.title('SVR: Actual vs Predicted Values')
-# plt.show()
 
 
 # ----------------------------------------
@@ -236,6 +222,10 @@ plt.ylabel('True Labels', fontsize=10)
 
 disp.plot()
 plt.show()
+
+# ----------------------------------------
+# Step 6: Stacked Model Performance Analysis
+# ----------------------------------------
 
 #StackingClassifier
 base_learners = [
