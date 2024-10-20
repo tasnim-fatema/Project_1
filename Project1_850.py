@@ -165,7 +165,15 @@ y_pred_dt = best_model_dt.predict(X_test)
 print(f"Accuracy (Decision Tree): {accuracy_score(y_test, y_pred_dt):.2f}")
 f1_dt = f1_score(y_test, y_pred_dt, average='weighted')
 print(f"F1 Score (Decision Tree): {f1_dt:.2f}")
+# Assuming best_model_dt is your trained Decision Tree model
+y_train_pred_dt = best_model_dt.predict(X_train)
+train_accuracy_dt = accuracy_score(y_train, y_train_pred_dt)
+print(f"Decision Tree Training Accuracy: {train_accuracy_dt:.4f}")
 
+# Test predictions and accuracy for Decision Tree
+y_pred_dt = best_model_dt.predict(X_test)
+test_accuracy_dt = accuracy_score(y_test, y_pred_dt)
+print(f"Decision Tree Testing Accuracy: {test_accuracy_dt:.4f}")
 
 # ----------------------------------------
 # Random Forest Classification
@@ -191,6 +199,10 @@ print(f"F1 Score (Random Forest): {f1:.2f}")
 print(classification_report(y_test, y_pred_rf))
 
 
+
+
+
+
 # Print classification report for more details
 print("Classification Report (Random Forest):")
 print(classification_report(y_test, y_pred_rf))
@@ -209,6 +221,34 @@ disp.plot(cmap=plt.cm.Blues)
 plt.title('Confusion Matrix (Random Forest)', fontsize=15, pad=20)
 plt.xlabel('Predicted Labels', fontsize=9)
 plt.ylabel('True Labels', fontsize=10)
+
+# ----------------------------------------
+# Logistic Regression
+# ----------------------------------------
+
+model = LogisticRegression(max_iter=1000)  # Ensure 'saga' solver for elasticnet
+param_grid_lr = [
+    {
+          # 'none' is removed as it's not supported by all solvers
+        'C': [0.01, 0.1, 1, 10, 100],
+        'max_iter': [2000]
+    }
+]
+
+clf = GridSearchCV(model, param_grid=param_grid_lr, cv=3, n_jobs=-1)
+best_clf = clf.fit(X_train, y_train)  # Make sure to use the correct variables
+
+# Use the best estimator to make predictions
+y_pred = best_clf.best_estimator_.predict(X_test)
+
+accuracy = accuracy_score(y_test, y_pred)
+print("Accuracy: {:.2f}%".format(accuracy * 100))
+print("Best Logistic Regression Model:", best_clf)
+best_model_lr= clf.best_estimator_
+print("Best Logistic Regression Model:", best_model_lr)
+
+# Evaluate the model
+print("\nClassification Report (Logistic Regression):\n", classification_report(y_test, y_pred))
 
 
 # ----------------------------------------
@@ -254,33 +294,6 @@ plt.show()
 # ----------------------------------------
 # Step 7: Model Evaluation
 # ----------------------------------------
-
-# # Save the best model using joblib
-# joblib.dump(stacked_model, 'stacked_model.joblib')
-
-
-# # Load the saved model and scaler
-# stacked_model = joblib.load('stacked_model.joblib')
-# scaler = joblib.load('scaler.joblib')
-
-# # Given coordinates to predict the maintenance step
-# new_coordinates = np.array([
-#     [9.375, 3.0625, 1.51],
-#     [6.995, 5.125, 0.3875],
-#     [0, 3.0625, 1.93],
-#     [9.4, 3, 1.8],
-#     [9.4, 3, 1.3]
-# ])
-
-# # Standardize the new coordinates using the loaded scaler
-# new_coordinates_scaled = scaler.transform(new_coordinates)
-
-# # Predict the maintenance step using the loaded model
-# predicted_steps = stacked_model.predict(new_coordinates_scaled)
-
-# # Print the predicted maintenance steps
-# print("Predicted Maintenance Steps for the provided coordinates:", predicted_steps)
-
 # Save the best model using joblib
 joblib.dump(stacked_model, 'stacked_model.joblib')
 
