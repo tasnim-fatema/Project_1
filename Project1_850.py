@@ -75,6 +75,7 @@ print(f"Testing data shape: {X_test.shape}")
 print(f"Training target shape: {y_train.shape}")
 print(f"Testing target shape: {y_test.shape}")
 
+#Visualize the correlation matrix
 df.corr()
 sns.heatmap(df.corr().round(2), annot=True, cmap="magma")
 corr1 = y_train.corr(X_train['X'])
@@ -102,34 +103,25 @@ X_train_scaled_df = pd.DataFrame(X_train_scaled, columns=X_train.columns)
 # Convert the scaled test data to a DataFrame
 X_test_scaled_df = pd.DataFrame(X_test_scaled, columns=X_test.columns)
 
-# Display a few rows of the scaled training data
+# Display a few rows of the scaled training and test data
 print(X_train_scaled_df.head()) 
-
-# Optionally, you can also view the scaled test data
 print(X_test_scaled_df.head())   
 
 # Display the shape of the resulting datasets
 print(f"Scaled Training data shape: {X_train_scaled.shape}")
 print(f"Scaled Testing data shape: {X_test_scaled.shape}")
 
-
-
-# #Linear Regression
-# linear_reg = LinearRegression()
-# param_grid_lr = {} 
-# grid_search_lr = GridSearchCV(linear_reg, param_grid_lr, cv=5, scoring='accuracy', n_jobs=-1)
-# grid_search_lr.fit(X_train, y_train)
-# best_model_lr = grid_search_lr.best_estimator_
-# print("Best Linear Regression Model:", best_model_lr)
-
+# ----------------------------------------
+# Step 5: Model Performance Analysis
+# ----------------------------------------
 
 
 # ----------------------------------------
-# 3. SVM with RandomizedSearchCV
+# SVM with RandomizedSearchCV
 # ----------------------------------------
-svm_model = SVC()  # Use Support Vector Classifier for classification tasks
+svm_model = SVC()  #Support Vector Classifier for classification tasks
 param_dist_svm = {
-    'C': [0.1, 1, 10, 100],
+    'C': [0.1, 1, 10],
     'gamma': ['scale', 'auto'],
     'kernel': ['linear', 'rbf']
 }
@@ -140,24 +132,21 @@ print("Best SVM Model:", best_model_svm)
 
 # Predictions and evaluation
 y_pred_svm = best_model_svm.predict(X_test_scaled)
-print(f"Accuracy (SVM): {accuracy_score(y_test, y_pred_svm):.2f}")
-print(f"F1 Score (SVM): {f1_score(y_test, y_pred_svm, average='weighted'):.2f}")
+print(f"Accuracy (SVM): {accuracy_score(y_test, y_pred_svm):.4f}")
+print(f"F1 Score (SVM): {f1_score(y_test, y_pred_svm, average='weighted'):.5f}")
 print(classification_report(y_test, y_pred_svm))
-
 
 # Predictions on test data with the best SVR model
 y_pred_svm = best_model_svm.predict(X_test_scaled)
 
-
-
 # ----------------------------------------
 # Decision Tree Classification
 # ----------------------------------------
-decision_tree = DecisionTreeClassifier(random_state=42)
+decision_tree = DecisionTreeClassifier(random_state=24)
 param_grid_dt = {
-    'max_depth': [None, 10, 20, 30],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4]
+    'max_depth': [None, 10, 20],
+    'min_samples_split': [5, 10],
+    'min_samples_leaf': [2, 4]
 }
 grid_search_dt = GridSearchCV(decision_tree, param_grid_dt, cv=5, scoring='accuracy', n_jobs=-1)
 grid_search_dt.fit(X_train, y_train)
@@ -182,7 +171,7 @@ param_grid_rf = {
     'min_samples_leaf': [1, 2, 4],
     'max_features': ['sqrt', 'log2']
 }
-grid_search_rf = GridSearchCV(random_forest, param_grid_rf, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search_rf = GridSearchCV(random_forest, param_grid_rf, cv=5, scoring='accuracy', n_jobs=-1)
 grid_search_rf.fit(X_train, y_train)
 best_model_rf = grid_search_rf.best_estimator_
 print("Best Random Forest Model:", best_model_rf)
@@ -194,19 +183,13 @@ f1 = f1_score(y_test, y_pred_rf, average='weighted')
 print(f"F1 Score (Random Forest): {f1:.2f}")
 print(classification_report(y_test, y_pred_rf))
 
-#Calculate F1 score
-y_pred_rf_class = np.round(y_pred_rf).astype(int)  # Convert regression predictions to class
-
-# Calculate F1 score
-f1 = f1_score(y_test, y_pred_rf_class, average='weighted')  # Weighted for multi-class classification
-print(f"F1 Score (Random Forest): {f1:.2f}")
 
 # Print classification report for more details
 print("Classification Report (Random Forest):")
-print(classification_report(y_test, y_pred_rf_class))
+print(classification_report(y_test, y_pred_rf))
 
 # Generate the confusion matrix
-cm = confusion_matrix(y_test, y_pred_rf_class)
+cm = confusion_matrix(y_test, y_pred_rf)
 
 # Define the class labels (e.g., 'Step' column values)
 class_labels = sorted(y.unique())  # Get the sorted unique classes
@@ -220,8 +203,6 @@ plt.title('Confusion Matrix (Random Forest)', fontsize=15, pad=20)
 plt.xlabel('Predicted Labels', fontsize=9)
 plt.ylabel('True Labels', fontsize=10)
 
-# disp.plot()
-# plt.show()
 
 # ----------------------------------------
 # Step 6: Stacked Model Performance Analysis
@@ -261,6 +242,11 @@ disp = ConfusionMatrixDisplay(confusion_matrix=cm)
 disp.plot(cmap=plt.cm.Blues)
 plt.title('Confusion Matrix for Stacked Model')
 plt.show()
+
+
+# ----------------------------------------
+# Step 7: Model Evaluation
+# ----------------------------------------
 
 # Save the best model using joblib
 joblib.dump(stacked_model, 'stacked_model.joblib')
