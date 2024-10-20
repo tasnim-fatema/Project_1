@@ -9,9 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import GridSearchCV
-from sklearn.svm import SVR
 from sklearn.svm import SVC
-from sklearn.metrics import mean_absolute_error
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import StackingClassifier
@@ -63,9 +61,9 @@ my_splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 # Perform stratified splitting
 for train_index, test_index in my_splitter.split(X, y):
     X_train = X.loc[train_index].reset_index(drop=True)
-X_test = X.loc[test_index].reset_index(drop=True)
-y_train = y.loc[train_index].reset_index(drop=True)
-y_test = y.loc[test_index].reset_index(drop=True)
+    X_test = X.loc[test_index].reset_index(drop=True)
+    y_train = y.loc[train_index].reset_index(drop=True)
+    y_test = y.loc[test_index].reset_index(drop=True)
 
 # Display the shape of the resulting datasets
 print(f"Training data shape: {X_train.shape}")
@@ -82,32 +80,32 @@ corr2 = y_train.corr(X_train['Y'])
 print(corr2)
 corr3 = y_train.corr(X_train['Z'])
 print(corr3)
-
+plt.show
 
 # ----------------------------------------
 # Step 4: Classification Model Development
 # ----------------------------------------
 
-# Initialize the StandardScaler
-my_scaler = StandardScaler()
+# # Initialize the StandardScaler
+# my_scaler = StandardScaler()
 
-# Fit the scaler on the training data and transform both the training and test data
-X_train_scaled = my_scaler.fit_transform(X_train)
-X_test_scaled = my_scaler.transform(X_test)
+# # Fit the scaler on the training data and transform both the training and test data
+# X_train_scaled = my_scaler.fit_transform(X_train)
+# X_test_scaled = my_scaler.transform(X_test)
 
-# Convert the scaled training data to a DataFrame
-X_train_scaled_df = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+# # Convert the scaled training data to a DataFrame
+# X_train_scaled_df = pd.DataFrame(X_train_scaled, columns=X_train.columns)
 
-# Convert the scaled test data to a DataFrame
-X_test_scaled_df = pd.DataFrame(X_test_scaled, columns=X_test.columns)
+# # Convert the scaled test data to a DataFrame
+# X_test_scaled_df = pd.DataFrame(X_test_scaled, columns=X_test.columns)
 
-# Display a few rows of the scaled training and test data
-print(X_train_scaled_df.head()) 
-print(X_test_scaled_df.head())   
+# # Display a few rows of the scaled training and test data
+# print(X_train_scaled_df.head()) 
+# print(X_test_scaled_df.head())   
 
-# Display the shape of the resulting datasets
-print(f"Scaled Training data shape: {X_train_scaled.shape}")
-print(f"Scaled Testing data shape: {X_test_scaled.shape}")
+# # Display the shape of the resulting datasets
+# print(f"Scaled Training data shape: {X_train_scaled.shape}")
+# print(f"Scaled Testing data shape: {X_test_scaled.shape}")
 
 # ----------------------------------------
 # Step 5: Model Performance Analysis
@@ -124,18 +122,29 @@ param_dist_svm = {
     'kernel': ['linear', 'rbf']
 }
 random_search_svm = RandomizedSearchCV(svm_model, param_distributions=param_dist_svm, n_iter=10, cv=5, random_state=42, n_jobs=-1)
-random_search_svm.fit(X_train_scaled, y_train)
+random_search_svm.fit(X_train, y_train)
 best_model_svm = random_search_svm.best_estimator_  # This was previously referred to as best_model_svm
 print("Best SVM Model:", best_model_svm)
 
 # Predictions and evaluation
-y_pred_svm = best_model_svm.predict(X_test_scaled)
+y_pred_svm = best_model_svm.predict(X_test)
 print(f"Accuracy (SVM): {accuracy_score(y_test, y_pred_svm):.4f}")
 print(f"F1 Score (SVM): {f1_score(y_test, y_pred_svm, average='weighted'):.5f}")
 print(classification_report(y_test, y_pred_svm))
 
-# Predictions on test data with the best SVR model
-y_pred_svm = best_model_svm.predict(X_test_scaled)
+# train_accuracy_svm = accuracy_score(y_train, y_train_pred_svm)
+# test_accuracy_svm = accuracy_score(y_test, y_pred_svm)
+# print(f"SVM Training Accuracy: {train_accuracy_svm:.4f}")
+# print(f"SVM Testing Accuracy: {test_accuracy_svm:.4f}")
+
+# Training predictions and accuracy for SVM
+y_train_pred_svm = best_model_svm.predict(X_train)
+train_accuracy_svm = accuracy_score(y_train, y_train_pred_svm)
+print(f"SVM Training Accuracy: {train_accuracy_svm:.4f}")
+
+# Test predictions and accuracy for SVM
+test_accuracy_svm = accuracy_score(y_test, y_pred_svm)
+print(f"SVM Testing Accuracy: {test_accuracy_svm:.4f}")
 
 # ----------------------------------------
 # Decision Tree Classification
@@ -219,10 +228,10 @@ final_estimator = LogisticRegression(max_iter=1000)
 stacked_model = StackingClassifier(estimators=base_learners, final_estimator=final_estimator, cv=5)
 
 # Train the stacking model
-stacked_model.fit(X_train_scaled, y_train)
+stacked_model.fit(X_train, y_train)
 
 # Predictions on the test set
-y_pred_stacked = stacked_model.predict(X_test_scaled)
+y_pred_stacked = stacked_model.predict(X_test)
 
 # Evaluate the model
 f1 = f1_score(y_test, y_pred_stacked, average='weighted')
@@ -246,13 +255,37 @@ plt.show()
 # Step 7: Model Evaluation
 # ----------------------------------------
 
+# # Save the best model using joblib
+# joblib.dump(stacked_model, 'stacked_model.joblib')
+
+
+# # Load the saved model and scaler
+# stacked_model = joblib.load('stacked_model.joblib')
+# scaler = joblib.load('scaler.joblib')
+
+# # Given coordinates to predict the maintenance step
+# new_coordinates = np.array([
+#     [9.375, 3.0625, 1.51],
+#     [6.995, 5.125, 0.3875],
+#     [0, 3.0625, 1.93],
+#     [9.4, 3, 1.8],
+#     [9.4, 3, 1.3]
+# ])
+
+# # Standardize the new coordinates using the loaded scaler
+# new_coordinates_scaled = scaler.transform(new_coordinates)
+
+# # Predict the maintenance step using the loaded model
+# predicted_steps = stacked_model.predict(new_coordinates_scaled)
+
+# # Print the predicted maintenance steps
+# print("Predicted Maintenance Steps for the provided coordinates:", predicted_steps)
+
 # Save the best model using joblib
 joblib.dump(stacked_model, 'stacked_model.joblib')
-joblib.dump(my_scaler, 'scaler.joblib')
 
-# Load the saved model and scaler
+# Load the saved model
 stacked_model = joblib.load('stacked_model.joblib')
-scaler = joblib.load('scaler.joblib')
 
 # Given coordinates to predict the maintenance step
 new_coordinates = np.array([
@@ -263,19 +296,21 @@ new_coordinates = np.array([
     [9.4, 3, 1.3]
 ])
 
-# Standardize the new coordinates using the loaded scaler
-new_coordinates_scaled = scaler.transform(new_coordinates)
+# # Predict the maintenance step using the loaded model
+# predicted_steps = stacked_model.predict(new_coordinates)
+
+# # Print the predicted maintenance steps
+# print("Predicted Maintenance Steps for the provided coordinates:", predicted_steps)
+
+
+# Convert the new coordinates to a DataFrame with feature names
+new_coordinates_df = pd.DataFrame(new_coordinates, columns=['X', 'Y', 'Z'])
 
 # Predict the maintenance step using the loaded model
-predicted_steps = stacked_model.predict(new_coordinates_scaled)
+predicted_steps = stacked_model.predict(new_coordinates_df)
 
 # Print the predicted maintenance steps
-print("Predicted Maintenance Steps for the provided coordinates:", predicted_steps)
-
-
-
-
-    
+print("Predicted Maintenance Steps for the provided coordinates:", predicted_steps)   
           
         
 
