@@ -12,9 +12,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVR
 from sklearn.svm import SVC
 from sklearn.metrics import mean_absolute_error
-#from sklearn.tree import DecisionTreeRegressor
 from sklearn.tree import DecisionTreeClassifier
-#from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
