@@ -198,7 +198,15 @@ f1 = f1_score(y_test, y_pred_rf, average='weighted')
 print(f"F1 Score (Random Forest): {f1:.2f}")
 print(classification_report(y_test, y_pred_rf))
 
+# Assuming best_model_rf is your trained Random Forest model
+y_train_pred_rf = best_model_rf.predict(X_train)
+train_accuracy_rf = accuracy_score(y_train, y_train_pred_rf)
+print(f"Random Forest Training Accuracy: {train_accuracy_rf:.4f}")
 
+# Test predictions and accuracy for Random Forest
+y_pred_rf = best_model_rf.predict(X_test)
+test_accuracy_rf = accuracy_score(y_test, y_pred_rf)
+print(f"Random Forest Testing Accuracy: {test_accuracy_rf:.4f}")
 
 
 
@@ -250,6 +258,15 @@ print("Best Logistic Regression Model:", best_model_lr)
 # Evaluate the model
 print("\nClassification Report (Logistic Regression):\n", classification_report(y_test, y_pred))
 
+# Assuming best_model_lr is your trained Logistic Regression model
+y_train_pred_lr = best_model_lr.predict(X_train)
+train_accuracy_lr = accuracy_score(y_train, y_train_pred_lr)
+print(f"Logistic Regression Training Accuracy: {train_accuracy_lr:.4f}")
+
+# Test predictions and accuracy for Logistic Regression
+y_pred_lr = best_model_lr.predict(X_test)
+test_accuracy_lr = accuracy_score(y_test, y_pred_lr)
+print(f"Logistic Regression Testing Accuracy: {test_accuracy_lr:.4f}")
 
 # ----------------------------------------
 # Step 6: Stacked Model Performance Analysis
