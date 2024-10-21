@@ -82,33 +82,9 @@ corr3 = y_train.corr(X_train['Z'])
 print(corr3)
 plt.show
 
+# 
 # ----------------------------------------
-# Step 4: Classification Model Development
-# ----------------------------------------
-
-# # Initialize the StandardScaler
-# my_scaler = StandardScaler()
-
-# # Fit the scaler on the training data and transform both the training and test data
-# X_train_scaled = my_scaler.fit_transform(X_train)
-# X_test_scaled = my_scaler.transform(X_test)
-
-# # Convert the scaled training data to a DataFrame
-# X_train_scaled_df = pd.DataFrame(X_train_scaled, columns=X_train.columns)
-
-# # Convert the scaled test data to a DataFrame
-# X_test_scaled_df = pd.DataFrame(X_test_scaled, columns=X_test.columns)
-
-# # Display a few rows of the scaled training and test data
-# print(X_train_scaled_df.head()) 
-# print(X_test_scaled_df.head())   
-
-# # Display the shape of the resulting datasets
-# print(f"Scaled Training data shape: {X_train_scaled.shape}")
-# print(f"Scaled Testing data shape: {X_test_scaled.shape}")
-
-# ----------------------------------------
-# Step 5: Model Performance Analysis
+# Step 4 & 5: Classification Model Development + Model Performance Analysis
 # ----------------------------------------
 
 
@@ -170,6 +146,14 @@ y_train_pred_dt = best_model_dt.predict(X_train)
 train_accuracy_dt = accuracy_score(y_train, y_train_pred_dt)
 print(f"Decision Tree Training Accuracy: {train_accuracy_dt:.4f}")
 
+
+# Generate and plot the confusion matrix
+cm_dt = confusion_matrix(y_test, y_pred_dt)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm_dt)
+disp.plot(cmap=plt.cm.Blues)
+plt.title("Confusion Matrix for Decision Tree")
+plt.show()
+
 # Test predictions and accuracy for Decision Tree
 y_pred_dt = best_model_dt.predict(X_test)
 test_accuracy_dt = accuracy_score(y_test, y_pred_dt)
@@ -215,20 +199,20 @@ print(f"Random Forest Testing Accuracy: {test_accuracy_rf:.4f}")
 print("Classification Report (Random Forest):")
 print(classification_report(y_test, y_pred_rf))
 
-# Generate the confusion matrix
-cm = confusion_matrix(y_test, y_pred_rf)
+# # Generate the confusion matrix
+# cm = confusion_matrix(y_test, y_pred_rf)
 
-# Define the class labels (e.g., 'Step' column values)
-class_labels = sorted(y.unique())  # Get the sorted unique classes
+# # Define the class labels (e.g., 'Step' column values)
+# class_labels = sorted(y.unique())  # Get the sorted unique classes
 
-# Plot the confusion matrix
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_labels)
-disp.plot(cmap=plt.cm.Blues)
+# # Plot the confusion matrix
+# disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_labels)
+# disp.plot(cmap=plt.cm.Blues)
 
-# Add title and customizations
-plt.title('Confusion Matrix (Random Forest)', fontsize=15, pad=20)
-plt.xlabel('Predicted Labels', fontsize=9)
-plt.ylabel('True Labels', fontsize=10)
+# # Add title and customizations
+# plt.title('Confusion Matrix (Random Forest)', fontsize=15, pad=20)
+# plt.xlabel('Predicted Labels', fontsize=9)
+# plt.ylabel('True Labels', fontsize=10)
 
 # ----------------------------------------
 # Logistic Regression
